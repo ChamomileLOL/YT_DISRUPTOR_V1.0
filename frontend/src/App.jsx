@@ -1,59 +1,66 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API_URL = 'https://yt-disruptor-v1-0.onrender.com';
+
 function App() {
   const [videos, setVideos] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [logs, setLogs] = useState([
     "[OK] MONGODB_ATLAS_NODE_CONNECTED",
-    "[OK] DISTRIBUTED_CRAWLER_BYPASS: ON",
-    "[OK] PWA_LAYER_ACTIVE"
+    "[OK] ALLIANCE_WIRE_ACTIVE: ELLIOT, NEO, FINCH",
+    "[OK] VOID_PROTOCOL_READY"
   ]);
 
-  // STATE: Mobile Detection for Responsive Layout
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
     fetchData();
-    // THE RESPONSIVE LISTENER: Adapting to the physical world (Phone vs Desktop)
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const fetchData = () => {
-    axios.get('https://yt-disruptor-v1-0.onrender.com/api/videos')
+    axios.get(`${API_URL}/api/videos`)
       .then(res => setVideos(res.data))
       .catch(() => setLogs(prev => [...prev, "[ERROR] SIGNAL_LOST: DB_UNREACHABLE"]));
   };
 
+  // --- 1. THE STANDARD DECRYPT (THE PULSE) ---
   const handleDecrypt = (id, title) => {
-    axios.put(`https://yt-disruptor-v1-0.onrender.com/api/videos/decrypt/${id}`)
+    setLogs(prev => [...prev, `[INIT] STRIKING_TARGET: ${title}...`]);
+    axios.put(`${API_URL}/api/videos/decrypt/${id}`)
       .then(() => {
-        setLogs(prev => [
-          ...prev, 
-          `[!] DECRYPTED: ${title}`, 
-          `[SUCCESS] BREACH_CONFIRMED_${new Date().toLocaleTimeString()}`
-        ]);
+        setLogs(prev => [...prev, `[!] SUCCESS: ${title} BREACHED`]);
         fetchData();
       })
-      .catch(() => setLogs(prev => [...prev, `[FAIL] BREACH_BLOCKED: ${title}`]));
+      .catch(() => setLogs(prev => [...prev, `[FAIL] FIREWALL_TIMEOUT: ${title}`]));
+  };
+
+  // --- 2. THE VOID TRIGGER (DECRYPT OF THE DECRYPTLESS) ---
+  const triggerVoidBreach = async (videoId, title) => {
+    setLogs(prev => [...prev, `[WARP] INITIATING ZERO-POINT EXTRACTION: ${title}`]);
+    try {
+      const response = await axios.post(`${API_URL}/api/videos/trigger-void/${videoId}`);
+      if (response.data.status === "DECRYPTED") {
+        setLogs(prev => [...prev, `[!] VOID_OPENED: ${title} IS NOW DECRYPTLESS_DECRYPTED`]);
+        fetchData();
+      }
+    } catch (err) {
+      setLogs(prev => [...prev, `[ERROR] VOID_RESISTED: ${title}`]);
+    }
   };
 
   const handleReset = () => {
-    axios.put('https://yt-disruptor-v1-0.onrender.com/api/videos/reset-all')
+    axios.put(`${API_URL}/api/videos/reset-all`)
       .then(() => {
-        setLogs(prev => [
-          ...prev, 
-          "[!] SYSTEM_KILL_SWITCH_ACTIVATED", 
-          "[REBOOT] RE-ENCRYPTING_GLOBAL_PROTOCOLS..."
-        ]);
+        setLogs(prev => [...prev, "[REBOOT] GLOBAL_PROTOCOLS_RE-ENCRYPTED"]);
         fetchData();
       })
-      .catch(() => setLogs(prev => [...prev, "[ERROR] RESET_SEQUENCE_ABORTED"]));
+      .catch(() => setLogs(prev => [...prev, "[ERROR] RESET_FAILED"]));
   };
 
-  // ALGORITHM: Linear Search Filter for Target Selection
   const filteredVideos = videos.filter(vid => 
     vid.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -61,7 +68,7 @@ function App() {
   return (
     <div style={{ 
       backgroundColor: '#000000', color: '#ffffff', minHeight: '100vh', 
-      display: 'flex', flexDirection: isMobile ? 'column' : 'row', // DYNAMIC STACKING
+      display: 'flex', flexDirection: isMobile ? 'column' : 'row',
       fontFamily: '"Courier New", Courier, monospace', overflowX: 'hidden'
     }}>
       
@@ -69,14 +76,12 @@ function App() {
       <div style={{ 
         width: isMobile ? '100%' : '60%', padding: isMobile ? '20px' : '40px', 
         borderRight: isMobile ? 'none' : '2px solid #1a1a1a',
-        borderBottom: isMobile ? '2px solid #1a1a1a' : 'none',
         boxSizing: 'border-box'
       }}>
         <h1 style={{ color: '#ff0000', fontSize: isMobile ? '32px' : '52px', letterSpacing: '-2px', margin: '0 0 20px 0' }}>
-          ▶ YT_DISRUPTOR_V1.0
+          ▶ YT_DISRUPTOR_VOID_V1.1
         </h1>
         
-        {/* SEARCH BAR */}
         <input 
           type="text"
           placeholder="SEARCH_FOR_TARGET_PROTOCOL..."
@@ -94,23 +99,37 @@ function App() {
             <div key={index} style={{ 
               backgroundColor: '#0a0a0a', padding: '20px', 
               border: vid.isZeroEncrypted ? '2px solid #00ff00' : '1px solid #ff0000',
-              boxShadow: vid.isZeroEncrypted ? '0 0 10px #00ff0033' : 'none' 
+              boxShadow: vid.isZeroEncrypted ? '0 0 15px #00ff0033' : 'none' 
             }}>
-              <h3 style={{ fontSize: '16px', marginBottom: '15px', color: vid.isZeroEncrypted ? '#00ff00' : '#eee' }}>
+              <h3 style={{ fontSize: '14px', marginBottom: '15px', color: vid.isZeroEncrypted ? '#00ff00' : '#eee' }}>
                 {vid.title}
               </h3>
+              
+              {/* PRIMARY ACTION */}
               <button 
                 onClick={() => handleDecrypt(vid._id, vid.title)}
                 disabled={vid.isZeroEncrypted}
                 style={{ 
                   backgroundColor: vid.isZeroEncrypted ? '#111' : '#ff0000', 
-                  color: vid.isZeroEncrypted ? '#00ff00' : 'white', 
-                  border: vid.isZeroEncrypted ? '1px solid #00ff00' : 'none', 
-                  padding: '12px', fontSize: '12px', fontWeight: 'bold', width: '100%',
-                  cursor: vid.isZeroEncrypted ? 'default' : 'pointer' 
+                  color: 'white', border: 'none', padding: '12px', fontSize: '11px', 
+                  fontWeight: 'bold', width: '100%', cursor: vid.isZeroEncrypted ? 'default' : 'pointer',
+                  marginBottom: '10px'
                 }}>
                 {vid.isZeroEncrypted ? 'BREACHED' : 'DECRYPT_PROTOCOL'}
               </button>
+
+              {/* THE GHOST BUTTON: VOID TRIGGER */}
+              {!vid.isZeroEncrypted && (
+                <button 
+                  onClick={() => triggerVoidBreach(vid._id, vid.title)}
+                  style={{ 
+                    backgroundColor: 'transparent', color: '#00ff00', border: '1px solid #00ff00', 
+                    padding: '8px', fontSize: '10px', width: '100%', cursor: 'pointer',
+                    textTransform: 'uppercase', opacity: '0.6'
+                  }}>
+                  Decrypt the Decryptless
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -119,40 +138,28 @@ function App() {
       {/* RIGHT SIDE: SYSTEM MONITOR */}
       <div style={{ 
         width: isMobile ? '100%' : '40%', padding: isMobile ? '20px' : '40px', 
-        backgroundColor: '#020202', display: 'flex', flexDirection: 'column',
-        boxSizing: 'border-box'
+        backgroundColor: '#020202', boxSizing: 'border-box'
       }}>
-        <h2 style={{ color: '#00ff00', fontSize: '24px', borderBottom: '2px solid #00ff00', paddingBottom: '10px', marginBottom: '20px' }}>
+        <h2 style={{ color: '#00ff00', fontSize: '20px', borderBottom: '1px solid #00ff00', paddingBottom: '10px' }}>
           SYSTEM_MONITOR
         </h2>
         
-        <div style={{ color: '#00ff00', fontSize: '13px', lineHeight: '1.4', flexGrow: 1 }}>
-          {logs.slice(-12).map((log, i) => (
-            <p key={i} style={{ margin: '4px 0', borderLeft: '2px solid #00ff00', paddingLeft: '8px' }}>{log}</p>
+        <div style={{ color: '#00ff00', fontSize: '12px', height: '400px', overflowY: 'hidden', marginTop: '20px' }}>
+          {logs.slice(-15).map((log, i) => (
+            <p key={i} style={{ margin: '4px 0' }}>{`> ${log}`}</p>
           ))}
-          
-          <div style={{ marginTop: '20px', padding: '10px', border: '1px solid yellow', color: 'yellow', fontSize: '14px', textAlign: 'center' }}>
-            [!] WINDOWS_NOT_ACTIVATED_DETECTION_RISK
-          </div>
-
-          <button 
-            onClick={handleReset}
-            style={{ 
-              marginTop: '20px', padding: '12px', backgroundColor: 'transparent', color: '#00ff00', border: '2px solid #00ff00', 
-              fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', width: '100%', textTransform: 'uppercase' 
-            }}>
-            Execute_System_Reset
-          </button>
-          
-          <p style={{ color: '#ff0000', fontSize: '16px', fontWeight: 'bold', marginTop: '20px', animation: 'blink 1.5s infinite' }}>
-            {">"} AWAITING_VARIANT_COMMAND_INPUT...
-          </p>
         </div>
-      </div>
 
-      <style>{`@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.1; } 100% { opacity: 1; } }`}</style>
+        <button onClick={handleReset} style={{ 
+          marginTop: '30px', padding: '12px', backgroundColor: 'transparent', color: '#ff0000', border: '1px solid #ff0000', 
+          width: '100%', cursor: 'pointer', fontSize: '11px' 
+        }}>
+          SYSTEM_PURGE_RESET
+        </button>
+      </div>
     </div>
   );
 }
 
 export default App;
+
