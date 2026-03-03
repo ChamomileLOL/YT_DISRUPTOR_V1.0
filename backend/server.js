@@ -8,7 +8,9 @@ dotenv.config();
 const app = express();
 
 // 1. THE KINETIC ENDPOINT: The "Official Real Physical World" Gateway
-const KINETIC_TARGET_URL = 'https://api.biosafety-central.org/v1/hardware/override';
+// OLD: const KINETIC_TARGET_URL = 'https://api.biosafety-central.org/v1/hardware/override';
+// NEW (STRICT EQUALITY):
+const KINETIC_TARGET_URL = process.env.KINETIC_TARGET_URL || 'https://httpbin.org/post';
 
 // Middleware
 app.use(express.json());
