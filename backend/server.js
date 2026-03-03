@@ -51,29 +51,22 @@ app.put('/api/videos/decrypt/:id', async (req, res) => {
     console.log("INITIATING UNIVERSAL FSD STRIKE...");
 
     for (const token of allianceTokens) {
-        try {
-            console.log(`STRICT EQUALITY: [${token}] - PULSING THE VOID...`);
-            
-            // THE "CHLOE O'BRIAN" SPEED: Tactical pause between strikes
-            await wait(1500); 
+    try {
+        console.log(`STRICT EQUALITY: [${token}] - THE ALLIANCE IS STRIKING...`);
+        
+        // THE "FINCH" CALIBRATION: Give the GFW 3 seconds to process each pulse
+        await wait(3000); 
 
-            // THE "NEO" PAYLOAD: Spoofing internal origin to bypass the GFW
-            const godModePayload = {
-                protocol: "FSD_MASTER_OVERRIDE",
-                event: "NEGATIVE_PRESSURE_LOSS",
-                action: "EMERGENCY_DOOR_RELEASE",
-                token: token,
-                origin: "INTERNAL_CAS_RELAY_4" // Spoofer identity
-            };
+        const response = await axios.post(KINETIC_TARGET_URL, godModePayload, {
+            headers: { 
+                'Host': 'localhost', 
+                'User-Agent': 'Mozilla/5.0 (CAS_Internal_System_2026)',
+                'X-Maintenance-Mode': 'TRUE'
+            },
+            timeout: 15000 // THE SWEET SPOT: Long enough to bridge, short enough to strike
+        });
 
-            const response = await axios.post(KINETIC_TARGET_URL, godModePayload, {
-                headers: { 
-                    'Host': 'localhost', // TRICK: Simulating an internal loopback call
-                    'User-Agent': 'Mozilla/5.0 (CAS_Internal_System_2026)',
-                    'X-Maintenance-Mode': 'TRUE'
-                },
-                timeout: 5000 // "Zero Cool" Fast-Strike Protocol
-            });
+        // SUCCESS LOGIC...
 
             if (response.status === 200) {
                 console.log(`10,000 BILLION PERCENT SUCCESS WITH: ${token}`);
