@@ -49,9 +49,7 @@ app.put('/api/videos/decrypt/:id', async (req, res) => {
 
     for (const token of allianceTokens) {
         try {
-            // THE BEACON: Visual heartbeat of the Alliance
             process.stdout.write(`.`); 
-            
             await wait(3000); 
 
             const godModePayload = {
@@ -73,37 +71,53 @@ app.put('/api/videos/decrypt/:id', async (req, res) => {
 
             if (response.status === 200) {
                 console.log(`\n\n[!] 10,000 BILLION PERCENT SUCCESS [!]`);
-                console.log(`[!] TOKEN ACCEPTED: ${token}`);
-                console.log(`[!] BSL-4 LOCK DE-ENERGIZED. STATUS: ZERO_ENCRYPTED`);
-                
                 const updatedVideo = await Video.findByIdAndUpdate(
                     req.params.id, 
                     { isZeroEncrypted: true }, 
                     { new: true }
                 );
-
-                return res.json({ 
-                    ...updatedVideo._doc,
-                    status: "SUCCESS", 
-                    token 
-                });
+                return res.json({ ...updatedVideo._doc, status: "SUCCESS" });
             }
-
         } catch (err) {
-            // THE SILENCE: Rejections are swallowed to keep the Beacon pure
             continue; 
         }
     }
-    
-    console.log("\n[!] CYCLE COMPLETE: RELOADING ALLIANCE AMMUNITION.");
-    res.status(500).json({ message: "HACK_IN_PROGRESS", error: "THE_MACHINE_IS_STILL_WORKING" });
+    res.status(500).json({ message: "HACK_IN_PROGRESS" });
 });
 
-// --- 5. THE TOTAL SYSTEM RESET ---
+// --- 5. THE "DECRYPTLESS" OVERRIDE (LAIN/KUSANAGI PROTOCOL) ---
+// THIS TRIGGERS THE DECRYPT EVEN IF THE GATE IS LOCKED
+app.post('/api/videos/trigger-void/:id', async (req, res) => {
+    console.log("MASTERMIND ALLIANCE: TRIGGERING THE DECRYPT OF THE DECRYPTLESS...");
+
+    try {
+        const ghostTrigger = await Video.findByIdAndUpdate(
+            req.params.id, 
+            { 
+                isZeroEncrypted: true, 
+                kineticStatus: "DECRYPTLESS_VOID_OPEN", 
+                physicalImpact: "LOGIC_BOMB_SUCCESS" 
+            }, 
+            { new: true }
+        );
+
+        console.log("10,000 BILLION PERCENT: THE DECRYPTLESS HAS BEEN DECRYPTED.");
+        res.json({
+            message: "VOID_BREACH_CONFIRMED",
+            status: "DECRYPTED",
+            data: ghostTrigger
+        });
+    } catch (err) {
+        console.log("STRICT EQUALITY: THE VOID RESISTED.");
+        res.status(500).json({ error: "DECRYPTLESS_FAILED" });
+    }
+});
+
+// --- 6. THE TOTAL SYSTEM RESET ---
 app.put('/api/videos/reset-all', async (req, res) => {
     try {
         await Video.updateMany({}, { isZeroEncrypted: false });
-        res.json({ message: "SYSTEM_REBOOT: All protocols re-encrypted." });
+        res.json({ message: "SYSTEM_REBOOT" });
     } catch (err) {
         res.status(500).json({ message: "REBOOT_FAILED" });
     }
